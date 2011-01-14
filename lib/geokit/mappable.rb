@@ -316,6 +316,41 @@ module Geokit
       
       provider.send(:reverse_geocode, self)
     end
+    
+    # Added from http://groups.google.com/group/geokit/browse_thread/thread/d6273be5990cc83b?fwc=1
+    # by Jeff Williams
+    # Hi, 
+    # This patch adds a function to LatLng which determines whether a LatLng 
+    # lies within a polygon defined as an array of LatLng's. We used it with 
+    # polygons defined in Google's KML files. 
+    # Regards, 
+    # Jeff 
+    # I couldn't see an option for attaching, so here it is: 
+    
+    # Determines whether a LatLng lies within a polygon defined as an array of 
+    # LatLng's. Returns true or false. 
+    # Adapted from http://local.wasp.uwa.edu.au/~pbourke/geometry/insidepoly/ 
+    def inside?(polygon) 
+      intersects = 0 
+      p1 = polygon[0] 
+      for i in 1..(polygon.size-1) 
+        p2 = polygon[i % polygon.size] 
+    
+        if ((self.lat > [p1.lat,p2.lat].min) && 
+           (self.lat <= [p1.lat,p2.lat].max) && 
+           (self.lng <= [p1.lng,p2.lng].max) && 
+           (p1.lat != p2.lat)) 
+    
+          xinters = (self.lat-p1.lat)*(p2.lng-p1.lng)/(p2.lat-p1.lat) p1.lng 
+    
+          intersects += 1 if (p1.lng == p2.lng || self.lng <= xinters) 
+        end 
+    
+        p1 = p2 
+      end 
+      (intersects % 2 == 1) 
+    end 
+    
   end
 
   # This class encapsulates the result of a geocoding call.

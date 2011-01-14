@@ -206,4 +206,34 @@ class LatLngTest < Test::Unit::TestCase #:nodoc: all
     assert_equal "Porscheplatz 1, 45127 Essen, Deutschland", res.full_address #slightly different from yahoo
     assert_equal "google", res.provider
   end
+  
+  
+  # Added from http://groups.google.com/group/geokit/browse_thread/thread/d6273be5990cc83b?fwc=1
+  # by Jeff Williams
+  # Hi, 
+  # This patch adds a function to LatLng which determines whether a LatLng 
+  # lies within a polygon defined as an array of LatLng's. We used it with 
+  # polygons defined in Google's KML files. 
+  # Regards, 
+  # Jeff 
+  # I couldn't see an option for attaching, so here it is: 
+  
+  def test_inside_polygon 
+    poly = [ 
+      Geokit::LatLng.new(0,0), 
+      Geokit::LatLng.new(10,0), 
+      Geokit::LatLng.new(10,10), 
+      Geokit::LatLng.new(20,10), 
+      Geokit::LatLng.new(20,0), 
+      Geokit::LatLng.new(30,0), 
+      Geokit::LatLng.new(30,20), 
+      Geokit::LatLng.new(0,20), 
+    ] 
+    assert(Geokit::LatLng.new(5,5).inside?(poly) == true) 
+    assert(Geokit::LatLng.new(15,5).inside?(poly) == false) 
+    assert(Geokit::LatLng.new(25,5).inside?(poly) == true) 
+    assert(Geokit::LatLng.new(15,15).inside?(poly) == true) 
+    assert(Geokit::LatLng.new(-10,-10).inside?(poly) == false) 
+    assert(Geokit::LatLng.new(50,50).inside?(poly) == false) 
+  end
 end
